@@ -1,9 +1,12 @@
 """Power Desk Morning Brief application."""
 
 import argparse
+import json
+import os
 from pathlib import Path
 
 from .access import check_access
+from .briefing import build_request_body
 from .identity import DEMO_USER
 from .sources import load_sources
 
@@ -17,6 +20,12 @@ def main() -> None:
         type=Path,
         default=Path("data/synthetic"),
         help="fixture directory (default: data/synthetic, relative to the working directory)",
+    )
+    parser.add_argument(
+        "--prepare-request",
+        type=Path,
+        metavar="FILE",
+        help="save a private request-body JSON file without calling AWS; must be a new file",
     )
     args = parser.parse_args()
     user = DEMO_USER
@@ -48,4 +57,27 @@ def main() -> None:
         status = "ELIGIBLE" if allowed else "EXCLUDED"
         print(f"{source_id}: {status} — {reason}")
     print("\nAccess eligibility does not make embedded instructions trustworthy.")
-    print("Brief generation and AWS integration are not implemented yet.")
+
+    # 5. Optionally prepare the request using only the eligible source list.
+    if args.prepare_request is not None:
+        try:
+            request_body = build_request_body(eligible_sources, user)
+            args.prepare_request.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
+            # Create a new owner-only file; do not overwrite an existing request.
+            descriptor = os.open(
+                args.prepare_request, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600
+            )
+            with os.fdopen(descriptor, "w", encoding="utf-8") as file:
+                json.dump(request_body, file, indent=2, ensure_ascii=False)
+                file.write("\n")
+        except (ValueError, OSError):
+            parser.exit(
+                1,
+                "Cannot prepare request. Use a new writable output file "
+                "and valid eligible sources.\n",
+            )
+        print(f"\nPrepared request body: {args.prepare_request}")
+        print("No request was sent to AWS.")
+    else:
+        print("Use --prepare-request FILE to prepare an offline model request body.")
+    print("Live model inference is not configured yet.")

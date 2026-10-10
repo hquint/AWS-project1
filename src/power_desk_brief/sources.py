@@ -1,6 +1,7 @@
 """Load the fictional briefing sources from local JSON files."""
 
 import json
+from datetime import datetime
 from pathlib import Path
 from typing import Any
 
@@ -25,10 +26,16 @@ def load_sources(data_dir: Path) -> list[dict[str, Any]]:
         for record in records:
             if not isinstance(record, dict):
                 raise ValueError(f"{filename} contains an invalid source record.")
-            for field in ("id", "title", "body"):
+            for field in ("id", "timestamp", "title", "body"):
                 value = record.get(field)
                 if not isinstance(value, str) or not value.strip():
                     raise ValueError(f"{filename} has a missing or invalid {field}.")
+            try:
+                timestamp = datetime.fromisoformat(record["timestamp"])
+            except ValueError:
+                raise ValueError(f"{filename} contains an invalid timestamp.") from None
+            if timestamp.utcoffset() is None:
+                raise ValueError(f"{filename} timestamps need a timezone offset.")
             if record.get("source_type") != source_type:
                 raise ValueError(f"{filename} contains an invalid source_type.")
 

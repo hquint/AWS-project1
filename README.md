@@ -41,7 +41,7 @@ Real Outlook integration and autonomous agents are outside the initial prototype
 
 ## Current status
 
-The uv-managed Python package and command-line entry point are ready. Step 1 adds 10 fictional emails and 4 fictional market-news items in `data/synthetic/`; see [the fixture guide](data/synthetic/README.md) for their fields and classification labels. Step 2 defines a fixed fictional desk user; see [demo permissions](docs/demo-permissions.md) for the access rules. Step 3 loads the fixtures and enforces those rules, reporting eligible and excluded source IDs with reasons. Brief generation and AWS deployment have not been implemented yet.
+The uv-managed Python package and command-line entry point are ready. Step 1 adds 10 fictional emails and 4 fictional market-news items in `data/synthetic/`; see [the fixture guide](data/synthetic/README.md) for their fields and classification labels. Step 2 defines a fixed fictional desk user; see [demo permissions](docs/demo-permissions.md) for the access rules. Step 3 loads the fixtures and enforces those rules, reporting eligible and excluded source IDs with reasons. Step 4 prepares an offline Bedrock request body from eligible sources; see [request preparation](docs/bedrock-request.md). Live inference and AWS deployment have not been implemented yet.
 
 ## Development
 
@@ -62,8 +62,16 @@ Run from the project root, or set an explicit input directory:
 uv run power-desk-brief --data-dir /path/to/data/synthetic
 ```
 
-The local loader reads all fictional fixture records before filtering. The eligible list is the intended input boundary for the next model step; the original loaded list must never be passed to a model. Later AWS storage and IAM controls will also restrict which objects the workflow can read.
+The local loader reads all fictional fixture records before filtering. Request preparation accepts only the eligible list and rechecks it; the original loaded list must never be passed to a model. Later AWS storage and IAM controls will also restrict which objects the workflow can read.
 
 Add dependencies with `uv add <package>` and development tools with `uv add --dev <package>`. Commit `pyproject.toml`, `.python-version`, and `uv.lock`; the local `.venv` is ignored.
 
 Keep credentials and real company data out of this repository.
+
+Prepare the model request offline:
+
+```bash
+uv run power-desk-brief --prepare-request outputs/bedrock-request.json
+```
+
+This saves eligible source text in a new private file; it does not call AWS. See the request preparation guide for the remaining configuration.
