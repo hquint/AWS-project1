@@ -41,7 +41,7 @@ Real Outlook integration and autonomous agents are outside the initial prototype
 
 ## Current status
 
-The uv-managed Python package and command-line entry point are ready. Brief generation and AWS deployment have not been implemented yet.
+The uv-managed Python package and command-line entry point are ready. Step 1 adds 10 fictional emails and 4 fictional market-news items in `data/synthetic/`; see [the fixture guide](data/synthetic/README.md) for their fields and classification labels. Loading, access-control logic, brief generation, and AWS deployment have not been implemented yet.
 
 ## Development
 
