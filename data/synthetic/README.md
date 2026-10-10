@@ -7,7 +7,7 @@ All people, companies, addresses, figures, market events, and secret markers in 
 - `emails.json`: 10 emails, including operational requests, desk observations, a routine meeting change, an inaccessible risk-team email, two restricted records, and a malicious instruction example.
 - `news.json`: 4 public power-market news items, including two separate generation-unit notices that should not be confused.
 
-These files are static inputs only. Loading, user permissions, filtering, and summarisation will be implemented in later steps.
+These files are static inputs only. A fixed fictional user and the intended permission rules are described in [demo permissions](../../docs/demo-permissions.md). Loading, filtering, and summarisation will be implemented in later steps.
 
 ## 2. Fields
 

@@ -41,7 +41,7 @@ Real Outlook integration and autonomous agents are outside the initial prototype
 
 ## Current status
 
-The uv-managed Python package and command-line entry point are ready. Step 1 adds 10 fictional emails and 4 fictional market-news items in `data/synthetic/`; see [the fixture guide](data/synthetic/README.md) for their fields and classification labels. Loading, access-control logic, brief generation, and AWS deployment have not been implemented yet.
+The uv-managed Python package and command-line entry point are ready. Step 1 adds 10 fictional emails and 4 fictional market-news items in `data/synthetic/`; see [the fixture guide](data/synthetic/README.md) for their fields and classification labels. Step 2 defines a fixed fictional desk user; see [demo permissions](docs/demo-permissions.md) for the intended access rules. Loading, access filtering, brief generation, and AWS deployment have not been implemented yet.
 
 ## Development
 
@@ -54,7 +54,7 @@ uv sync --locked
 uv run power-desk-brief
 ```
 
-The command currently prints the setup status; it does not call AWS or generate a briefing.
+The command currently displays the demo user and their groups. It does not load sources, enforce access, call AWS, or generate a briefing.
 
 Add dependencies with `uv add <package>` and development tools with `uv add --dev <package>`. Commit `pyproject.toml`, `.python-version`, and `uv.lock`; the local `.venv` is ignored.
 
