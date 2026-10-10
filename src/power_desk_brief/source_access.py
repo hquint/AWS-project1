@@ -2,7 +2,7 @@
 
 from typing import Any
 
-from .identity import DemoUser
+from .identity_setup import DemoUser
 
 
 def check_access(source: dict[str, Any], user: DemoUser) -> tuple[bool, str]:

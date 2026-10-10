@@ -2,7 +2,7 @@
 
 ## 1. Who is using the application?
 
-The local demo uses one fictional user, defined in `src/power_desk_brief/identity.py`:
+The local demo uses one fictional user, defined in `src/power_desk_brief/identity_setup.py`:
 
 - User ID: `demo-head-of-power`.
 - Display name: Bobby Axelrod, Head of Power Trading.

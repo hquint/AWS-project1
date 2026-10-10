@@ -3,8 +3,8 @@
 import json
 from typing import Any
 
-from .access import check_access
-from .identity import DemoUser
+from .source_access import check_access
+from .identity_setup import DemoUser
 
 
 SYSTEM_PROMPT = """You prepare a concise morning brief for a power trading desk.

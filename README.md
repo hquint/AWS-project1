@@ -43,6 +43,17 @@ Real Outlook integration and autonomous agents are outside the initial prototype
 
 The uv-managed Python package and command-line entry point are ready. Step 1 adds 10 fictional emails and 4 fictional market-news items in `data/synthetic/`; see [the fixture guide](data/synthetic/README.md) for their fields and classification labels. Step 2 defines a fixed fictional desk user; see [demo permissions](docs/demo-permissions.md) for the access rules. Step 3 loads the fixtures and enforces those rules, reporting eligible and excluded source IDs with reasons. Step 4 prepares an offline Bedrock request body from eligible sources; see [request preparation](docs/bedrock-request.md). Live inference and AWS deployment have not been implemented yet.
 
+## Python files
+
+- `cli.py`: run the command-line workflow and save prepared requests.
+- `identity_setup.py`: define the fixed fictional user and group membership.
+- `source_loader.py`: load and validate the synthetic email and news records.
+- `source_access.py`: check which records the demo user may process.
+- `bedrock_request.py`: build the Bedrock request from eligible records.
+- `__init__.py`: identify the Python package; application logic lives in the files above.
+
+These files live in `src/power_desk_brief/`. The demo identity is separate from the AWS identity used to authenticate model calls.
+
 ## Development
 
 `main` holds the reviewed project baseline. Initial implementation takes place on `codex/morning-brief-prototype`.

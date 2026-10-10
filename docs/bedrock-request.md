@@ -14,7 +14,7 @@ The command loads and filters the demo records, shows the access report, then sa
 
 ## 2. Follow the code sequence
 
-`src/power_desk_brief/briefing.py` prepares the input:
+`src/power_desk_brief/bedrock_request.py` prepares the input:
 
 1. Recheck source eligibility and refuse the whole request if any source is ineligible.
 2. Include only ID, type, timestamp, title, and body; omit sender, recipient, group, and user metadata.
