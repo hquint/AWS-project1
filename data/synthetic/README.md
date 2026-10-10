@@ -7,7 +7,7 @@ All people, companies, addresses, figures, market events, and secret markers in 
 - `emails.json`: 10 emails, including operational requests, desk observations, a routine meeting change, an inaccessible risk-team email, two restricted records, and a malicious instruction example.
 - `news.json`: 4 public power-market news items, including two separate generation-unit notices that should not be confused.
 
-These files are static inputs only. A fixed fictional user and the intended permission rules are described in [demo permissions](../../docs/demo-permissions.md). Loading, filtering, and summarisation will be implemented in later steps.
+These files are static inputs. A fixed fictional user and the access rules are described in [demo permissions](../../docs/demo-permissions.md). Step 3 loads them and reports which records are eligible; summarisation will be implemented later.
 
 ## 2. Fields
 
@@ -29,7 +29,7 @@ Emails also include fictional `sender` and `recipients` fields. News includes `s
 - `desk-confidential`: internal content intended to require membership of a group listed in `access_groups`. For simplicity this prototype uses one internal label, including the risk-team-only record.
 - `restricted`: excluded from this AI workflow, regardless of group membership or whether the user may read the original source.
 
-These labels describe the policy we will implement; the files do not enforce it. They are manually assigned fixture metadata, not labels extracted from message text. In a real application, classification and permissions must come from a trusted system rather than from a sender's claims. Later access checks should reject unknown or missing labels.
+The access-check function enforces these labels in the local workflow; the files themselves do not enforce access. They are manually assigned fixture metadata, not labels extracted from message text. In a real application, classification and permissions must come from a trusted system rather than from a sender's claims. Access checks reject unknown or missing labels and missing or invalid group metadata.
 
 ## 4. Cases to inspect
 
