@@ -41,10 +41,21 @@ Real Outlook integration and autonomous agents are outside the initial prototype
 
 ## Current status
 
-Repository setup only. Application code and deployment resources have not been implemented yet.
+The uv-managed Python package and command-line entry point are ready. Brief generation and AWS deployment have not been implemented yet.
 
 ## Development
 
 `main` holds the reviewed project baseline. Initial implementation takes place on `codex/morning-brief-prototype`.
 
-Keep credentials and real company data out of this repository. Add installation and execution instructions when the prototype is implemented.
+Use Python 3.12 and [uv](https://docs.astral.sh/uv/) to manage the environment and dependencies:
+
+```bash
+uv sync --locked
+uv run power-desk-brief
+```
+
+The command currently prints the setup status; it does not call AWS or generate a briefing.
+
+Add dependencies with `uv add <package>` and development tools with `uv add --dev <package>`. Commit `pyproject.toml`, `.python-version`, and `uv.lock`; the local `.venv` is ignored.
+
+Keep credentials and real company data out of this repository.
