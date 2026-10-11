@@ -12,7 +12,7 @@ def upload_brief(
     filename: str,
     *,
     bucket: str,
-    profile: str,
+    profile: str | None,
     region: str,
 ) -> str:
     """Upload a new object under briefings/ and return its S3 URI."""
@@ -26,7 +26,7 @@ def upload_brief(
         raise ValueError("Use a non-empty briefing and a Markdown filename without folders.")
     key = f"briefings/{filename}"
 
-    # 2. Use the same named local profile as Bedrock; credentials stay outside Git.
+    # 2. Use a local profile, or runtime role credentials when profile is None.
     try:
         session = boto3.Session(profile_name=profile, region_name=region)
         with closing(
@@ -59,7 +59,7 @@ def upload_brief(
         elif code == "NoSuchBucket":
             message = "The S3 bucket was not found. Check --s3-bucket and --aws-region."
         elif code in {"ExpiredToken", "InvalidToken", "InvalidAccessKeyId"}:
-            message = "AWS credentials are invalid or expired. Run aws login for the selected profile."
+            message = "AWS credentials are invalid or expired. Refresh the local login or check the execution role."
         elif code == "ConditionalRequestConflict":
             message = "Another upload conflicted with this request. Check S3 before trying again."
         else:
@@ -67,8 +67,8 @@ def upload_brief(
         raise RuntimeError(message) from None
     except BotoCoreError:
         raise RuntimeError(
-            "Cannot connect to S3. Check your connection and profile; "
-            "run aws login --profile PROFILE if the session has expired. "
+            "Cannot connect to S3. Check the connection and credentials; "
+            "refresh the local login or check the execution role. "
             "If the connection failed after sending, check S3 before trying again."
         ) from None
 

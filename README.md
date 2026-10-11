@@ -41,17 +41,18 @@ Real Outlook integration and autonomous agents are outside the initial prototype
 
 ## Current status
 
-The uv-managed Python package and command-line entry point are ready. Step 1 adds 10 fictional emails and 4 fictional market-news items in `data/synthetic/`; see [the fixture guide](data/synthetic/README.md) for their fields and classification labels. Step 2 defines a fixed fictional desk user; see [demo permissions](docs/demo-permissions.md) for the access rules. Step 3 loads the fixtures and enforces those rules, reporting eligible and excluded source IDs with reasons. Step 4 prepares an offline Bedrock request body from eligible sources; see [request preparation](docs/bedrock-request.md). Step 5 adds live Nova Lite inference, basic output checks, and private local Markdown storage; see [live briefing generation](docs/bedrock-inference.md). Step 6 adds optional S3 upload of a previously generated briefing; see [S3 storage](docs/s3-storage.md). Lambda deployment remains a later step.
+The uv-managed Python package and command-line entry point are ready. Step 1 adds 10 fictional emails and 4 fictional market-news items in `data/synthetic/`; see [the fixture guide](data/synthetic/README.md) for their fields and classification labels. Step 2 defines a fixed fictional desk user; see [demo permissions](docs/demo-permissions.md) for the access rules. Step 3 loads the fixtures and enforces those rules, reporting eligible and excluded source IDs with reasons. Step 4 prepares an offline Bedrock request body from eligible sources; see [request preparation](docs/bedrock-request.md). Step 5 adds live Nova Lite inference, basic output checks, and private local Markdown storage; see [live briefing generation](docs/bedrock-inference.md). Step 6 adds optional S3 upload of a previously generated briefing; see [S3 storage](docs/s3-storage.md). Step 7 adds a Lambda handler and deployment ZIP; see [Lambda deployment](docs/lambda-deployment.md). The user deployed the function in Frankfurt and completed a successful manual run that saved a new briefing to S3. CloudWatch log retention is set to seven days; automatic scheduling has not been configured.
 
 ## Python files
 
 - `cli.py`: run the command-line workflow, save requests or briefings, and upload an existing brief.
+- `lambda_handler.py`: run the filtered generation and S3 storage workflow inside Lambda using its IAM role.
 - `identity_setup.py`: define the fixed fictional user and group membership.
 - `source_loader.py`: load and validate the synthetic email and news records.
 - `source_access.py`: check which records the demo user may process.
 - `brief_validation.py`: check the returned briefing format and permitted source references.
 - `aws/bedrock_request.py`: build the AWS Bedrock request from eligible records.
-- `aws/bedrock_invoke.py`: authenticate, call Bedrock, and extract the response text and token counts.
+- `aws/bedrock_invoke.py`: use a local profile or runtime role, call Bedrock, and extract the response text and token counts.
 - `aws/s3_storage.py`: upload a new briefing object to S3 with encryption and overwrite protection.
 - `__init__.py`: identify the Python package; application logic lives in the files above.
 
@@ -107,3 +108,14 @@ uv run power-desk-brief \
 ```
 
 This checks the brief against the current eligible source IDs, then uploads it as `briefings/morning-brief.md`. It does not call Bedrock. Existing object names are refused, and the local file is kept. S3 storage and requests have their own usage charges.
+
+Prepare the Lambda deployment package:
+
+```bash
+uv run --locked python scripts/build_lambda_package.py
+```
+
+This builds `dist/powerdesk-lambda.zip` for Python 3.12 / Linux x86_64 without
+calling AWS. The Lambda handler reuses the source filtering, Bedrock generation,
+and validation code, then writes the result directly to S3. See the Lambda guide
+for the execution role, environment variables, and later console deployment.

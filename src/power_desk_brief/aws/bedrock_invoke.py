@@ -15,15 +15,15 @@ def generate_brief(
     sources: list[dict[str, Any]],
     user: DemoUser,
     *,
-    profile: str,
+    profile: str | None,
     region: str,
     model_id: str,
 ) -> tuple[str, dict[str, int]]:
-    """Return model text and token counts using local AWS credentials."""
+    """Return model text and token counts using a local profile or the runtime AWS identity."""
     # 1. Recheck access and build the same body used by offline preparation.
     request_body = build_request_body(sources, user)
 
-    # 2. Read the named local profile. No credentials are placed in this project.
+    # 2. Use a local profile, or runtime role credentials when profile is None.
     try:
         session = boto3.Session(profile_name=profile, region_name=region)
         with closing(
@@ -46,7 +46,7 @@ def generate_brief(
         elif code in {
             "ExpiredTokenException", "InvalidClientTokenId", "UnrecognizedClientException"
         }:
-            message = "AWS credentials are invalid or expired. Run aws login for the selected profile."
+            message = "AWS credentials are invalid or expired. Refresh the local login or check the execution role."
         elif code in {"ThrottlingException", "ServiceUnavailableException"}:
             message = "Bedrock is temporarily unavailable or throttled. Try again later."
         else:
@@ -54,8 +54,8 @@ def generate_brief(
         raise RuntimeError(message) from None
     except BotoCoreError:
         raise RuntimeError(
-            "Cannot connect to AWS. Check your connection and profile; "
-            "run aws login --profile PROFILE if the session has expired."
+            "Cannot connect to AWS. Check the connection and credentials; "
+            "refresh the local login or check the execution role."
         ) from None
 
     # 4. Reject incomplete responses and tool requests before saving anything.
