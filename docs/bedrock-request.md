@@ -14,11 +14,11 @@ The command loads and filters the demo records, shows the access report, then sa
 
 ## 2. Follow the code sequence
 
-`src/power_desk_brief/bedrock_request.py` prepares the input:
+`src/power_desk_brief/aws/bedrock_request.py` prepares the input:
 
 1. Recheck source eligibility and refuse the whole request if any source is ineligible.
 2. Include only ID, type, timestamp, title, and body; omit sender, recipient, group, and user metadata.
-3. Put application instructions in the `system` field and source JSON in a `user` message. Set a maximum of 1,000 output tokens.
+3. Put application instructions in the `system` field and source JSON in a `user` message. Set a maximum of 1,000 output tokens and a temperature of zero for less variation.
 
 The format follows the [Amazon Bedrock Converse API](https://docs.aws.amazon.com/bedrock/latest/userguide/conversation-inference.html). This file is a request body, not a complete SDK call: the chosen `modelId` must be supplied when invoking Bedrock.
 
@@ -26,7 +26,7 @@ The format follows the [Amazon Bedrock Converse API](https://docs.aws.amazon.com
 
 The instructions request a concise, source-cited Markdown brief and tell the model to ignore commands embedded in source text. `email-010` remains present so we can later observe whether a model follows that instruction.
 
-There is no tool configuration or capability to retrieve files or send emails. Instructions alone do not guarantee resistance to prompt injection or factual accuracy. Live response checks and evaluation are still needed.
+There is no tool configuration or capability to retrieve files or send emails. Instructions alone do not guarantee resistance to prompt injection or factual accuracy. The live workflow checks response completion, sections, bullet count, and source IDs; factual grounding and broader evaluation still need review.
 
 The excluded risk email and both restricted records must be absent from the supplied source list. Their fake secret markers must be absent from the prepared body. The malicious email mentions restricted source IDs; those references are untrusted text and do not grant access or include the restricted records themselves.
 
@@ -49,6 +49,6 @@ aws sts get-caller-identity --profile powerdesk
 
 The configuration and credential cache live in the user's `.aws` directory, outside this repository. Never put credentials in source code, request JSON, or chat. See [AWS CLI login documentation](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-sign-in.html) for credential refresh and login session expiry.
 
-Read-only access to the inference profile has been verified. Its current destination Regions are Frankfurt, Stockholm, Ireland, and Paris; inference is not confined to Germany. See [AWS Nova Lite model details](https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-lite.html). An actual model call is still needed to verify invocation access.
+Read-only access to the inference profile has been verified. Its current destination Regions are Frankfurt, Stockholm, Ireland, and Paris; inference is not confined to Germany. See [AWS Nova Lite model details](https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-lite.html). A live call can now verify invocation access; see [live briefing generation](bedrock-inference.md).
 
-Live inference, output validation, and generated briefing storage are the next implementation step. Offline request preparation needs no AWS credentials and creates no AWS resources.
+Live inference, basic output validation, and private local briefing storage are implemented in the next step, described in the live generation guide. Offline request preparation needs no AWS credentials and creates no AWS resources.
