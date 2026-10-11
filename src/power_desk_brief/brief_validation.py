@@ -6,7 +6,7 @@ import re
 def validate_brief(text: str, eligible_ids: set[str]) -> None:
     """Check basic format and source references, not factual accuracy."""
     if not text.strip():
-        raise ValueError("Bedrock returned an empty briefing.")
+        raise ValueError("The briefing is empty.")
     for heading in ("Market developments", "Priority emails", "Follow-up items"):
         if heading.casefold() not in text.casefold():
             raise ValueError("The briefing is missing a required section.")

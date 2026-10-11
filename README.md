@@ -41,17 +41,18 @@ Real Outlook integration and autonomous agents are outside the initial prototype
 
 ## Current status
 
-The uv-managed Python package and command-line entry point are ready. Step 1 adds 10 fictional emails and 4 fictional market-news items in `data/synthetic/`; see [the fixture guide](data/synthetic/README.md) for their fields and classification labels. Step 2 defines a fixed fictional desk user; see [demo permissions](docs/demo-permissions.md) for the access rules. Step 3 loads the fixtures and enforces those rules, reporting eligible and excluded source IDs with reasons. Step 4 prepares an offline Bedrock request body from eligible sources; see [request preparation](docs/bedrock-request.md). Step 5 adds live Nova Lite inference, basic output checks, and private local Markdown storage; see [live briefing generation](docs/bedrock-inference.md). AWS deployment remains a later step.
+The uv-managed Python package and command-line entry point are ready. Step 1 adds 10 fictional emails and 4 fictional market-news items in `data/synthetic/`; see [the fixture guide](data/synthetic/README.md) for their fields and classification labels. Step 2 defines a fixed fictional desk user; see [demo permissions](docs/demo-permissions.md) for the access rules. Step 3 loads the fixtures and enforces those rules, reporting eligible and excluded source IDs with reasons. Step 4 prepares an offline Bedrock request body from eligible sources; see [request preparation](docs/bedrock-request.md). Step 5 adds live Nova Lite inference, basic output checks, and private local Markdown storage; see [live briefing generation](docs/bedrock-inference.md). Step 6 adds optional S3 upload of a previously generated briefing; see [S3 storage](docs/s3-storage.md). Lambda deployment remains a later step.
 
 ## Python files
 
-- `cli.py`: run the command-line workflow and save requests or briefings.
+- `cli.py`: run the command-line workflow, save requests or briefings, and upload an existing brief.
 - `identity_setup.py`: define the fixed fictional user and group membership.
 - `source_loader.py`: load and validate the synthetic email and news records.
 - `source_access.py`: check which records the demo user may process.
 - `brief_validation.py`: check the returned briefing format and permitted source references.
 - `aws/bedrock_request.py`: build the AWS Bedrock request from eligible records.
 - `aws/bedrock_invoke.py`: authenticate, call Bedrock, and extract the response text and token counts.
+- `aws/s3_storage.py`: upload a new briefing object to S3 with encryption and overwrite protection.
 - `__init__.py`: identify the Python package; application logic lives in the files above.
 
 These files live in `src/power_desk_brief/`. The `aws/` subpackage contains AWS-specific code; the CLI coordinates local access checks, model invocation, briefing validation, and saving. The demo identity is separate from the AWS identity used to authenticate model calls.
@@ -95,4 +96,14 @@ Generate a live briefing with the configured developer profile:
 uv run power-desk-brief --generate-brief outputs/morning-brief.md
 ```
 
-This sends the 11 eligible fictional sources to Amazon Nova Lite and incurs Bedrock usage charges. The Markdown output must be a new file and is ignored by Git. It stays on your computer; S3 and Lambda are not used yet. See the live generation guide for configuration, error handling, and validation limits.
+This sends the 11 eligible fictional sources to Amazon Nova Lite and incurs Bedrock usage charges. The Markdown output must be a new file and is ignored by Git. This command saves it on your computer; uploading to S3 is a separate command, and Lambda is not used yet. See the live generation guide for configuration, error handling, and validation limits.
+
+Upload the existing brief to the configured private S3 bucket:
+
+```bash
+uv run power-desk-brief \
+  --upload-brief outputs/morning-brief.md \
+  --s3-bucket powerdesk-briefings-517777395961-eu-central-1-an
+```
+
+This checks the brief against the current eligible source IDs, then uploads it as `briefings/morning-brief.md`. It does not call Bedrock. Existing object names are refused, and the local file is kept. S3 storage and requests have their own usage charges.
