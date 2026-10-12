@@ -1,0 +1,25 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "ListBriefings",
+      "Effect": "Allow",
+      "Action": "s3:ListBucket",
+      "Resource": "arn:aws:s3:::powerdesk-briefings-517777395961-eu-central-1-an",
+      "Condition": {
+        "StringLike": {
+          "s3:prefix": "briefings/*"
+        }
+      }
+    },
+    {
+      "Sid": "ReadWriteBriefings",
+      "Effect": "Allow",
+      "Action": [
+        "s3:GetObject",
+        "s3:PutObject"
+      ],
+      "Resource": "arn:aws:s3:::powerdesk-briefings-517777395961-eu-central-1-an/briefings/*"
+    }
+  ]
+}

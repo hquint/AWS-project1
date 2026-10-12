@@ -1,0 +1,42 @@
+[
+  {
+    "id": "news-001",
+    "source_type": "news",
+    "timestamp": "2026-10-09T06:20:00+02:00",
+    "title": "Weaker German wind expected this evening",
+    "source_name": "Demo Weather Bulletin",
+    "classification": "public",
+    "access_groups": [],
+    "body": "Evening wind output is expected to be below the previous forecast. The change may affect the supply outlook, but the price impact remains uncertain. An updated bulletin is due at 09:00 Berlin time."
+  },
+  {
+    "id": "news-002",
+    "source_type": "news",
+    "timestamp": "2026-10-09T06:30:00+02:00",
+    "title": "Generation availability revised: 600 MW outage extended",
+    "source_name": "Demo Generation Notices",
+    "classification": "public",
+    "access_groups": [],
+    "body": "A 600 MW generating unit is expected to remain unavailable until 20:00 Berlin time rather than returning at 16:00. The operator will publish another update at noon."
+  },
+  {
+    "id": "news-003",
+    "source_type": "news",
+    "timestamp": "2026-10-09T06:40:00+02:00",
+    "title": "Demand outlook: cooler evening temperatures",
+    "source_name": "Demo Power Market News",
+    "classification": "public",
+    "access_groups": [],
+    "body": "Cooler evening temperatures could lift demand relative to the prior outlook. Forecast uncertainty remains material."
+  },
+  {
+    "id": "news-004",
+    "source_type": "news",
+    "timestamp": "2026-10-09T06:50:00+02:00",
+    "title": "Generation update: 250 MW unit returns to service",
+    "source_name": "Demo Generation Notices",
+    "classification": "public",
+    "access_groups": [],
+    "body": "A separate 250 MW generating unit has returned to service after an overnight outage. This is a different unit from the 600 MW unit whose outage was extended earlier this morning."
+  }
+]
