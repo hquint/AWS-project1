@@ -41,7 +41,21 @@ Real Outlook integration and autonomous agents are outside the initial prototype
 
 ## Current status
 
-The uv-managed Python package and command-line entry point are ready. Step 1 adds 10 fictional emails and 4 fictional market-news items in `data/synthetic/`; see [the fixture guide](data/synthetic/README.md) for their fields and classification labels. Step 2 defines a fixed fictional desk user; see [demo permissions](docs/demo-permissions.md) for the access rules. Step 3 loads the fixtures and enforces those rules, reporting eligible and excluded source IDs with reasons. Step 4 prepares an offline Bedrock request body from eligible sources; see [request preparation](docs/bedrock-request.md). Step 5 adds live Nova Lite inference, basic output checks, and private local Markdown storage; see [live briefing generation](docs/bedrock-inference.md). Step 6 adds optional S3 upload of a previously generated briefing; see [S3 storage](docs/s3-storage.md). Step 7 adds a Lambda handler and deployment ZIP; see [Lambda deployment](docs/lambda-deployment.md). The user deployed the function in Frankfurt and completed a successful manual run that saved a new briefing to S3. CloudWatch log retention is set to seven days; automatic scheduling has not been configured.
+**The first backend prototype is ready for demonstration.** It loads fictional
+emails and news, checks the demo user's access, generates a cited briefing using
+Bedrock Nova Lite, validates the result, and saves it locally or in private S3
+storage. Both the local workflow and a live Lambda run have been exercised.
+
+The user completed a one-time EventBridge Scheduler trial. A read-only check of
+the resulting S3 briefing confirmed SSE-S3 encryption and valid format and source
+references. CloudWatch logs have seven-day retention, as confirmed by the user.
+Manual Lambda runs remain available. The schedule's automatic deletion has not
+been independently verified through the developer profile.
+
+Start with the [prototype demo guide](docs/prototype-demo.md) to repeat the demo.
+The [Lambda deployment guide](docs/lambda-deployment.md) records configuration
+and the first live run. The input data and application identity are fictional;
+Streamlit, optional audio, and broader automated tests remain later milestones.
 
 ## Python files
 
@@ -97,7 +111,7 @@ Generate a live briefing with the configured developer profile:
 uv run power-desk-brief --generate-brief outputs/morning-brief.md
 ```
 
-This sends the 11 eligible fictional sources to Amazon Nova Lite and incurs Bedrock usage charges. The Markdown output must be a new file and is ignored by Git. This command saves it on your computer; uploading to S3 is a separate command, and Lambda is not used yet. See the live generation guide for configuration, error handling, and validation limits.
+This sends the 11 eligible fictional sources to Amazon Nova Lite and incurs Bedrock usage charges. The Markdown output must be a new file and is ignored by Git. This command saves it on your computer; uploading to S3 is a separate command. This local command does not invoke Lambda. See the live generation guide for configuration, error handling, and validation limits.
 
 Upload the existing brief to the configured private S3 bucket:
 
@@ -118,4 +132,4 @@ uv run --locked python scripts/build_lambda_package.py
 This builds `dist/powerdesk-lambda.zip` for Python 3.12 / Linux x86_64 without
 calling AWS. The Lambda handler reuses the source filtering, Bedrock generation,
 and validation code, then writes the result directly to S3. See the Lambda guide
-for the execution role, environment variables, and later console deployment.
+for the execution role, environment variables, and console deployment settings.

@@ -6,7 +6,9 @@ The deployment ZIP is `dist/powerdesk-lambda.zip`. It is generated and ignored b
 The user deployed `powerdesk-morning-brief` in Frankfurt through the AWS console
 and successfully invoked it with the private `manual-briefing` test event (`{}`).
 The execution-result and S3 screenshots confirm the first cloud run and output.
-No automatic trigger or schedule has been configured.
+The user subsequently completed a one-time EventBridge Scheduler trial.
+See [the prototype demo guide](prototype-demo.md) for the later read-only output
+verification and how to repeat the demo manually.
 
 The user created `PowerDeskBriefLambdaRole` in IAM and attached the existing
 `PowerDeskBedrockNovaLite`, `PowerDeskS3Briefings`, and AWS-managed
@@ -88,7 +90,14 @@ To run manually, use the private `manual-briefing` console test event (`{}`). Ea
 calls Bedrock and, if validation succeeds, creates a new S3 object. Distinct
 invocations are separate chargeable runs; this first version does not deduplicate
 repeated events. Lambda execution and CloudWatch logging can also incur charges.
-Scheduling and retry behaviour will be configured in a later step.
+The one-time Scheduler trial used `PowerDeskBriefSchedulerRole` to invoke this
+function with `{}`, with schedule deletion after completion and Scheduler
+retries off. The console guide also requested Lambda asynchronous retry attempts
+`0`. Scheduler removal and the final retry settings have not been independently
+retrieved through the developer profile. Scheduled delivery does not provide an
+exactly-once guarantee; this prototype does not deduplicate events.
+
+See [AWS asynchronous invocation settings](https://docs.aws.amazon.com/lambda/latest/dg/invocation-async-configuring.html).
 
 ## Local validation completed
 
@@ -116,9 +125,10 @@ The user supplied an execution-result screenshot with status Succeeded:
 - Output key: `briefings/morning-brief-20261011T135101Z-cb7d4c52-3dbf-4855-abb7-90d1f06f4944.md`.
 
 A separate S3 screenshot confirmed that new object exists, is 578 bytes, and
-uses S3 Standard. The earlier local upload `briefings/morning-brief.md` remains
-583 bytes. The visible execution logs contain only request/runtime information
-and the application's counts, token usage, and S3 location. The newly generated
-briefing contents and its S3 encryption metadata have not been independently
-read back as part of this Lambda verification. Review the downloaded brief
+uses S3 Standard. The earlier local upload `briefings/morning-brief.md` was
+583 bytes. The user later deleted the previous output objects before the
+scheduled trial. The visible execution logs contain only request/runtime information
+and the application's counts, token usage, and S3 location. The first manual output was not independently downloaded during that
+verification. A later scheduled-trial output was read back and checked; see
+[the prototype demo guide](prototype-demo.md). Review the downloaded brief
 against the fictional fixtures for factual accuracy.
